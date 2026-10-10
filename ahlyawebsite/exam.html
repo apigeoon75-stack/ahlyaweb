@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>عرض الامتحان | Ahlya</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <!-- Header -->
+  <header class="site-header">
+    <nav class="nav" aria-label="القائمة الرئيسية">
+      <a href="index.html">الرئيسية</a>
+      <a href="exams.html" class="active">الامتحانات</a>
+      <a href="credits.html">الاعتمادات</a>
+      <a href="terms.html">شروط الاستخدام</a>
+    </nav>
+    <a href="index.html" class="logo">
+      <svg viewBox="0 0 64 64" aria-hidden="true">
+        <path d="M32 8 2 22l30 14 30-14z"/>
+        <path d="M14 33v12c0 5 8 9 18 9s18-4 18-9V33L32 41z"/>
+      </svg>
+      <span>Ahlya</span>
+    </a>
+  </header>
+
+  <main class="page">
+    <a href="exams.html" class="back-link">العودة إلى الامتحانات</a>
+
+    <h1 class="page-title" id="exam-title">امتحان</h1>
+    <p class="exam-meta" id="exam-meta"></p>
+
+    <!-- PDF file (shown only if this exam has one) -->
+    <section class="pdf-section" id="pdf-section" hidden>
+      <h2>ملف الامتحان (PDF)</h2>
+      <div class="pdf-actions">
+        <a id="pdf-open" class="exam-btn" target="_blank" rel="noopener">فتح في صفحة جديدة</a>
+        <a id="pdf-download" class="exam-btn" download>تحميل الملف</a>
+      </div>
+      <iframe id="pdf-frame" class="pdf-frame" title="ملف الامتحان"></iframe>
+    </section>
+    <p class="no-pdf" id="no-pdf" hidden>لا يوجد ملف لهذا الامتحان بعد.</p>
+
+    <!-- Exam photos: one box per picture (created by the script below; hidden if there are none) -->
+    <section class="exam-images" id="exam-images" aria-label="صور الامتحان" hidden></section>
+  </main>
+
+  <!-- Footer -->
+  <footer class="site-footer">
+    <nav class="footer-nav" aria-label="روابط التذييل">
+      <a href="index.html">الرئيسية</a>
+      <a href="exams.html">الامتحانات</a>
+      <a href="credits.html">الاعتمادات</a>
+      <a href="terms.html">شروط الاستخدام</a>
+    </nav>
+    <p>© 2026 Ahlya. جميع الحقوق محفوظة.</p>
+  </footer>
+
+  <script>
+    // Fill the title and details from the card that was clicked
+    const params = new URLSearchParams(location.search);
+    const title = params.get("title");
+    const meta = params.get("meta");
+    if (title) {
+      document.getElementById("exam-title").textContent = title;
+      document.title = title + " | Ahlya";
+    }
+    if (meta) document.getElementById("exam-meta").textContent = meta;
+    // Only allow PDFs from our own pdfs folder (blocks links to other websites)
+    let pdf = params.get("pdf");
+    if (!/^pdfs\/[A-Za-z0-9._-]+\.pdf$/.test(pdf || "") || pdf.includes("..")) pdf = null;
+    if (pdf) {
+      document.getElementById("pdf-section").hidden = false;
+      document.getElementById("pdf-frame").src = pdf;
+      document.getElementById("pdf-open").href = pdf;
+      const dl = document.getElementById("pdf-download");
+      dl.href = pdf;
+      dl.setAttribute("download", pdf.split("/").pop());  // saved with the PDF's own name
+    }
+
+    // Exam photos: one box per picture passed in the link (only files inside the images folder)
+    const imgs = params.getAll("img").filter(p => /^images\/[A-Za-z0-9._-]+\.(jpe?g|png|webp)$/i.test(p) && !p.includes(".."));
+    const box = document.getElementById("exam-images");
+    imgs.forEach((src, i) => {
+      const img = document.createElement("img");
+      img.className = "exam-photo";
+      img.src = src;
+      img.alt = "الصفحة " + (i + 1);
+      img.loading = "lazy";
+      box.appendChild(img);
+    });
+    box.hidden = imgs.length === 0;
+
+    // Show the "no file" message only when there is neither a PDF nor photos
+    document.getElementById("no-pdf").hidden = !!pdf || imgs.length > 0;
+  </script>
+
+</body>
+</html>

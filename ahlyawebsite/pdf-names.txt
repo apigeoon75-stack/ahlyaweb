@@ -1,0 +1,21 @@
+Put your PDF files in a folder called pdfs (next to index.html).
+Use exactly these file names:
+
+12-math-2024-final.pdf
+12-physics-2024-final.pdf
+12-chemistry-2023-final.pdf
+12-arabic-2024-monthly.pdf
+12-english-2023-monthly.pdf
+12-hebrew-2024-final.pdf
+11-math-2024-final.pdf
+11-physics-2023-monthly.pdf
+11-chemistry-2024-final.pdf
+11-arabic-2023-final.pdf
+11-english-2022-final.pdf
+11-hebrew-2023-final.pdf
+10-math-2024-final.pdf
+10-physics-2023-final.pdf
+10-chemistry-2023-monthly.pdf
+10-arabic-2022-final.pdf
+10-english-2025-monthly.pdf
+10-hebrew-2024-final.pdf

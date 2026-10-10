@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>الامتحانات | Ahlya</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <!-- Header -->
+  <header class="site-header">
+    <nav class="nav" aria-label="القائمة الرئيسية">
+      <a href="index.html">الرئيسية</a>
+      <a href="exams.html" class="active">الامتحانات</a>
+      <a href="credits.html">الاعتمادات</a>
+      <a href="terms.html">شروط الاستخدام</a>
+    </nav>
+    <a href="index.html" class="logo">
+      <svg viewBox="0 0 64 64" aria-hidden="true">
+        <path d="M32 8 2 22l30 14 30-14z"/>
+        <path d="M14 33v12c0 5 8 9 18 9s18-4 18-9V33L32 41z"/>
+      </svg>
+      <span>Ahlya</span>
+    </a>
+  </header>
+
+  <main class="page">
+    <h1 class="page-title">الامتحانات الماضية</h1>
+
+    <!-- Filters (they work: choose one and the list updates) -->
+    <form class="filters" onsubmit="return false">
+      <select id="f-grade" aria-label="الصف">
+        <option value="">كل الصفوف</option>
+        <option>الصف الثاني عشر</option>
+        <option>الصف الحادي عشر</option>
+        <option>الصف العاشر</option>
+      </select>
+      <select id="f-subject" aria-label="المادة">
+        <option value="">كل المواد</option>
+        <option>الرياضيات</option>
+        <option>الفيزياء</option>
+        <option>الكيمياء</option>
+        <option>البيولوجيا</option>
+        <option>اللغة العربية</option>
+        <option>اللغة الإنجليزية</option>
+        <option>اللغة العبرية</option>
+        <option>محشيفيم</option>
+        <option>دين</option>
+      </select>
+      <select id="f-level" aria-label="المستوى">
+        <option value="">كل المستويات</option>
+        <option>5 وحدات</option>
+        <option>4 وحدات</option>
+        <option>3 وحدات</option>
+      </select>
+      <select id="f-year" aria-label="السنة">
+        <option value="">كل السنوات</option>
+        <option>2025</option>
+        <option>2024</option>
+        <option>2023</option>
+        <option>2022</option>
+      </select>
+    </form>
+
+    <p class="results-count" id="count"></p>
+
+    <!-- Cards are created here by the script below -->
+    <section class="exams-grid" id="exams-grid"></section>
+    <p class="no-results" id="no-results" hidden>لا توجد امتحانات مطابقة. جرّب تغيير الفلاتر.</p>
+  </main>
+
+  <!-- Footer -->
+  <footer class="site-footer">
+    <nav class="footer-nav" aria-label="روابط التذييل">
+      <a href="index.html">الرئيسية</a>
+      <a href="exams.html">الامتحانات</a>
+      <a href="credits.html">الاعتمادات</a>
+      <a href="terms.html">شروط الاستخدام</a>
+    </nav>
+    <p>© 2026 Ahlya. جميع الحقوق محفوظة.</p>
+  </footer>
+
+  <script src="exams-data.js"></script>
+  <script>
+
+    const grid = document.getElementById("exams-grid");
+    const noResults = document.getElementById("no-results");
+    const count = document.getElementById("count");
+    const filters = {
+      grade:   document.getElementById("f-grade"),
+      subject: document.getElementById("f-subject"),
+      level:   document.getElementById("f-level"),
+      year:    document.getElementById("f-year")
+    };
+
+    function render() {
+      // Keep only the exams that match every chosen filter
+      const shown = exams.filter(e =>
+        Object.keys(filters).every(key => !filters[key].value || e[key] === filters[key].value)
+      );
+
+      grid.innerHTML = shown.map(e => {
+        const title = "امتحان " + e.subject + " " + e.type;
+        const meta = e.grade + " · " + e.year;
+        const href = "exam.html?title=" + encodeURIComponent(title) + "&meta=" + encodeURIComponent(meta) + (e.pdf ? "&pdf=" + encodeURIComponent(e.pdf) : "") + (e.images || []).map(i => "&img=" + encodeURIComponent(i)).join("");
+        return `
+          <article class="exam">
+            <span class="exam-tag">${e.level}</span>
+            <h2 class="exam-title">${title}</h2>
+            <p class="exam-meta">${meta}</p>
+            <div class="exam-actions">
+              <a href="${href}" class="exam-btn">عرض الامتحان</a>
+              <span class="pdf-badge ${(e.pdf || (e.images && e.images.length)) ? "yes" : "no"}">${e.pdf ? "يحتوي على PDF" : (e.images && e.images.length) ? "يحتوي على صور" : "بدون ملفات"}</span>
+            </div>
+          </article>`;
+      }).join("");
+
+      noResults.hidden = shown.length > 0;
+      count.textContent = "عدد الامتحانات: " + shown.length;
+    }
+
+    // Update the list whenever a filter changes
+    Object.values(filters).forEach(select => select.addEventListener("change", render));
+    render();
+  </script>
+
+</body>
+</html>
